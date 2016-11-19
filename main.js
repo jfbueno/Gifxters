@@ -12,16 +12,26 @@
 (function() {
     'use strict';
 
-    const apiKey = "dc6zaTOxFJmzC"; //Beta API Key - Use only in development
-    const apiUrl = "http://api.giphy.com/v1/gifs/search";
+    String.prototype.replaceAll = function(search, replacement) {
+        var target = this;
+        return target.split(search).join(replacement);
+    };
+
+    var offset = 0, limit = 6;
+    const imgTagTpl = '<img class="gif" src="#GIF-URL#" style="width: 120px; height: 80px; cursor: pointer; margin: 3px;" data-url="#GIF-URL#"> </img>';
+    const apiKey = 'dc6zaTOxFJmzC'; //Beta API Key - Use only in development
+    const apiUrl = 'http://api.giphy.com/v1/gifs/search';
     const modalOptions = {
-        position: { my: "left bottom", at: "left bottom", of: $('#widgets') } ,
+        position: { my: 'left bottom', at: 'left bottom', of: $('#widgets') } ,
         closeText: '',
         closeOnEscape: true,
-        draggable: false,
+        draggable: true,
+        resizable: false,
         title: 'Selecionar GIF',
         modal: true
     };
+
+    $('').css( { cursor: 'pointer' } );
 
     $.getScript("http://code.jquery.com/ui/1.12.0/jquery-ui.min.js", function(){
         $('<link/>', {
@@ -41,13 +51,13 @@
         if(!$('#txt-busca').val())
             return;
 
-        var url = apiUrl + '?q=' + $('#txt-busca').val() + '&limit=6&api_key=' + apiKey;
+        offset = 0;
+        var url = apiUrl + '?q=' + $('#txt-busca').val() + '&limit=6&offset=' + offset + '&api_key=' + apiKey;
         $.get(url, function(data){
             var modalSource = modalInicio();
 
             data.data.forEach(function(el){
-                var gifUrl = el.images.original.url;
-                modalSource += '<img class="gif" src="' + gifUrl + '" style="width: 120px; height: 80px; cursor: pointer; margin: 3px;" data-url="'+ gifUrl + '"> </img>';
+                modalSource += imgTagTpl.replaceAll('#GIF-URL#', el.images.original.url);
             });
 
             modalSource += modalFim();
@@ -56,23 +66,42 @@
         });
     });
 
+    $('body').on('click', '#prev-page', function(){
+        offset = offset > 5 ?  offset - 6 : 0;
+        alterar($(this));
+    });
+
+    $('body').on('click', '#next-page', function(){
+        offset += 6;
+        alterar($(this));
+    });
+
+    function alterar(elemento){
+        var gifs = elemento.parent().parent().find('.gif');
+        var url = apiUrl + '?q=' + $('#txt-busca').val() + '&limit=6&offset=' + offset + '&api_key=' + apiKey;
+
+        $.get(url, function(data){
+            console.log(data);
+            gifs.each(function(i, gif){
+                $(this).data('url', data.data[i].images.original.url);
+                $(this).attr('src', data.data[i].images.original.url);
+            });
+        });
+    }
+
     $('body').on('click', '.gif', function(){
         $('#input').val($(this).data('url'));
-        $('#sayit-button').trigger('click');
+        //$('#sayit-button').trigger('click');
         $('#dialog').dialog('destroy');
     });
 })();
 
 function modalFim(){
-    return '</div><span>Powered by GIPHY</span></div>';
+    return '</div><span>Powered by GIPHY</span><div style="float: right"><button id="prev-page" style="margin-right: 5px;">&#8592;</button><button id="next-page">&#8594;</button></div></div>';
 }
 
 function modalInicio(){
     return '<div id="dialog"> <div id="dialog-content">';
-}
-
-function montarTagImg(gifUrl){
-    return '<img class="gif" src="' + gifUrl + '" style="width: 120px; height: 80px; cursor: pointer; margin: 3px;" data-url="'+ gifUrl + '"> </img>';
 }
 
 function htmlInputs(){
