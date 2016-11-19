@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         SoPt-Gifs
+// @name         se-chat-gif-chaser
 // @namespace    com.jefhtavares
 // @version      0.2
-// @description  try to take over the world!
-// @author       You
+// @description  Find and send gifs in SE chat
+// @author       https://github.com/jefhtavares
 // @match        http://chat.stackexchange.com/rooms/*
 // @match        https://chat.stackexchange.com/rooms/*
 // @grant        none
@@ -30,8 +30,6 @@
         title: 'Selecionar GIF',
         modal: true
     };
-
-    $('').css( { cursor: 'pointer' } );
 
     $.getScript("http://code.jquery.com/ui/1.12.0/jquery-ui.min.js", function(){
         $('<link/>', {
@@ -68,30 +66,36 @@
 
     $('body').on('click', '#prev-page', function(){
         offset = offset > 5 ?  offset - 6 : 0;
-        alterar($(this));
+        alterar($(this).parent().parent());
     });
 
     $('body').on('click', '#next-page', function(){
         offset += 6;
-        alterar($(this));
+        alterar($(this).parent().parent());
     });
 
     function alterar(elemento){
-        var gifs = elemento.parent().parent().find('.gif');
         var url = apiUrl + '?q=' + $('#txt-busca').val() + '&limit=6&offset=' + offset + '&api_key=' + apiKey;
 
         $.get(url, function(data){
-            console.log(data);
-            gifs.each(function(i, gif){
-                $(this).data('url', data.data[i].images.original.url);
-                $(this).attr('src', data.data[i].images.original.url);
-            });
+            adicionarGifs(elemento, data.data);
         });
+    }
+
+    function adicionarGifs(parentElement, data){
+        $(parentElement).find('#dialog-content').html('');
+
+        var strHtml = '';
+        data.forEach(function(el) {
+            strHtml += imgTagTpl.replaceAll('#GIF-URL#', el.images.original.url);
+        });
+
+        $(parentElement).find('#dialog-content').html(strHtml);
     }
 
     $('body').on('click', '.gif', function(){
         $('#input').val($(this).data('url'));
-        //$('#sayit-button').trigger('click');
+        $('#sayit-button').trigger('click');
         $('#dialog').dialog('destroy');
     });
 })();
