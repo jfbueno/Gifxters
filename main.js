@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         gif-chaser
+// @name         Gifxters
 // @namespace    com.jefhtavares
 // @version      0.2
 // @description  Find and send gifs in SE chat
