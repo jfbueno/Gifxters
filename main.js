@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         se-chat-gif-chaser
+// @name         gif-chaser
 // @namespace    com.jefhtavares
 // @version      0.2
 // @description  Find and send gifs in SE chat
@@ -19,7 +19,7 @@
 
     var offset = 0, limit = 6;
     const imgTagTpl = '<img class="gif" src="#GIF-URL#" style="width: 120px; height: 80px; cursor: pointer; margin: 3px;" data-url="#GIF-URL#"> </img>';
-    const apiKey = 'dc6zaTOxFJmzC'; //Beta API Key - Use only in development
+    const apiKey = 'dc6zaTOxFJmzC'; //Beta API Key
     const apiUrl = 'http://api.giphy.com/v1/gifs/search';
     const modalOptions = {
         position: { my: 'left bottom', at: 'left bottom', of: $('#widgets') } ,
@@ -50,7 +50,9 @@
             return;
 
         offset = 0;
-        var url = apiUrl + '?q=' + $('#txt-busca').val() + '&limit=6&offset=' + offset + '&api_key=' + apiKey;
+        var params = $.param({q: $('#txt-busca').val(), limit: 6, offset: offset, api_key: apiKey});
+        var url = apiUrl + '?' + params;
+
         $.get(url, function(data){
             var modalSource = modalInicio();
 
@@ -75,7 +77,8 @@
     });
 
     function alterar(elemento){
-        var url = apiUrl + '?q=' + $('#txt-busca').val() + '&limit=6&offset=' + offset + '&api_key=' + apiKey;
+        var params = $.param({q: $('#txt-busca').val(), limit: 6, offset: offset, api_key: apiKey});
+        var url = apiUrl + '?' + params;
 
         $.get(url, function(data){
             adicionarGifs(elemento, data.data);
@@ -111,4 +114,3 @@ function modalInicio(){
 function htmlInputs(){
     return '<input type="text" id="txt-busca" /> <button class="button" id="bt-buscar">Buscar GIF</button>';
 }
-
