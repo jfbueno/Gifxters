@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Gifxters
 // @namespace    com.jefhtavares
-// @version      0.2
+// @version      0.2.1
 // @description  Find and send gifs in SE chat
 // @author       https://github.com/jefhtavares
 // @match        http://chat.stackexchange.com/rooms/*
@@ -9,15 +9,19 @@
 // @grant        none
 // ==/UserScript==
 
-(function(doc) {
+(function() {
     'use strict';
 
-    function trigger(){
+    String.prototype.replaceAll = function(search, replacement) {
+        var target = this;
+        return target.split(search).join(replacement);
+    };
 
-        String.prototype.replaceAll = function(search, replacement) {
-            var target = this;
-            return target.split(search).join(replacement);
-        };
+    function main(){
+        if(typeof $ === 'undefined'){
+            setTimeout(main, 100);
+            return;
+        }
 
         var offset = 0, limit = 6;
         const imgTagTpl = '<img class="gif" src="#GIF-URL#" style="width: 120px; height: 80px; cursor: pointer; margin: 3px;" data-url="#GIF-URL#"> </img>';
@@ -25,6 +29,7 @@
         const apiUrl = 'http://api.giphy.com/v1/gifs/search';
         const modalOptions = {
             position: { my: 'left bottom', at: 'left bottom', of: $('#widgets') } ,
+            appendTo: '#gifxters',
             closeText: '',
             closeOnEscape: true,
             draggable: true,
@@ -33,21 +38,7 @@
             modal: true
         };
 
-        $.getScript("http://code.jquery.com/ui/1.12.0/jquery-ui.min.js", function(){
-            $('<link/>', {
-                rel: 'stylesheet',
-                type: 'text/css',
-                href: 'http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css'
-            }).appendTo('head');
-
-            $('#widgets').append(htmlInputs());
-        });
-
-        $('.ui-widget-overlay').live('click', function(){
-            $('#dialog').dialog('close');
-        });
-
-        $('body').on('click', '#bt-buscar', function () {
+        var findGifs = function () {
             if(!$('#txt-busca').val())
                 return;
 
@@ -66,6 +57,27 @@
 
                 $(modalSource).dialog(modalOptions);
             });
+        };
+
+        $.getScript("http://code.jquery.com/ui/1.12.0/jquery-ui.min.js", function(){
+            $('<link/>', {
+                rel: 'stylesheet',
+                type: 'text/css',
+                href: 'http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css'
+            }).appendTo('head');
+
+            $('#widgets').append(htmlInputs());
+        });
+
+        $('.ui-widget-overlay').live('click', function(){
+            $('#dialog').dialog('close');
+        });
+
+        $('body').on('click', '#bt-buscar', findGifs);
+        $('body').on('keydown', '#txt-busca', function(e) {
+            if(e.keyCode == 13) {
+                findGifs();
+            }
         });
 
         $('body').on('click', '#prev-page', function(){
@@ -100,22 +112,22 @@
 
         $('body').on('click', '.gif', function(){
             $('#input').val($(this).data('url'));
-            $('#sayit-button').trigger('click');
+            //$('#sayit-button').trigger('click');
             $('#dialog').dialog('destroy');
         });
     }
 
-    window.onload = trigger;
-})(document);
+    function modalFim(){
+        return '</div><span>Powered by GIPHY</span><div style="float: right"><button id="prev-page" style="margin-right: 5px;">&#8592;</button><button id="next-page">&#8594;</button></div></div>';
+    }
 
-function modalFim(){
-    return '</div><span>Powered by GIPHY</span><div style="float: right"><button id="prev-page" style="margin-right: 5px;">&#8592;</button><button id="next-page">&#8594;</button></div></div>';
-}
+    function modalInicio(){
+        return '<div id="dialog"> <div id="dialog-content">';
+    }
 
-function modalInicio(){
-    return '<div id="dialog"> <div id="dialog-content">';
-}
+    function htmlInputs(){
+        return '<div id="gifxters" style="position: relative;"><input type="text" id="txt-busca" /> <button class="button" id="bt-buscar">Buscar GIF</button></div>';
+    }
 
-function htmlInputs(){
-    return '<input type="text" id="txt-busca" /> <button class="button" id="bt-buscar">Buscar GIF</button>';
-}
+    main();
+})();
