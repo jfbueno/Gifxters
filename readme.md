@@ -1,4 +1,4 @@
-##Gifxters
+<h2>Gifxters</h2>
 
 A simple tampermonkey script to find and send GIFs in Stack Exchange chat rooms.
 
