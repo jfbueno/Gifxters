@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         Gifxters
-// @namespace    com.jefhtavares
+// @namespace    com.jfbueno
 // @version      0.3.2
 // @description  Find and send gifs in SE chat
-// @author       https://github.com/jefhtavares
+// @author       https://github.com/jfbueno
 // @match        http://chat.stackexchange.com/rooms/*
 // @match        https://chat.stackexchange.com/rooms/*
 // @grant        none
