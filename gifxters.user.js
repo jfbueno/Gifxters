@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Gifxters
 // @namespace    com.jfbueno
-// @version      0.3.2
+// @version      0.3.3
 // @description  Find and send gifs in SE chat
 // @author       https://github.com/jfbueno
 // @match        http://chat.stackexchange.com/rooms/*
@@ -66,7 +66,7 @@ with_jquery(function($) {
         $('<link/>', {
             rel: 'stylesheet',
             type: 'text/css',
-            href: 'http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css'
+            href: 'https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css'
         }).appendTo('head');
 
         $('#widgets').append(htmlInputs());
