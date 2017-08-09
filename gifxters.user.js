@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Gifxters
 // @namespace    com.jfbueno
-// @version      0.3.3
+// @version      0.3.4
 // @description  Find and send gifs in SE chat
 // @author       https://github.com/jfbueno
 // @match        http://chat.stackexchange.com/rooms/*
@@ -29,7 +29,7 @@ with_jquery(function($) {
     var offset = 0, limit = 6;
     const imgTagTpl = '<img class="gif" src="#GIF-URL#" style="width: 120px; height: 80px; cursor: pointer; margin: 3px;" data-url="#GIF-URL#"> </img>';
     const apiKey = 'dc6zaTOxFJmzC'; //Beta API Key
-    const apiUrl = 'http://api.giphy.com/v1/gifs/search';
+    const apiUrl = 'https://api.giphy.com/v1/gifs/search';
     const modalOptions = {
         position: { my: 'left bottom', at: 'left bottom', of: $('#widgets') } ,
         appendTo: '#gifxters',
@@ -62,7 +62,7 @@ with_jquery(function($) {
         });
     };
 
-    $.getScript("http://code.jquery.com/ui/1.12.0/jquery-ui.min.js", function(){
+    $.getScript("https://code.jquery.com/ui/1.12.0/jquery-ui.min.js", function(){
         $('<link/>', {
             rel: 'stylesheet',
             type: 'text/css',
