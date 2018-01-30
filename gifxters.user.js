@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Gifxters
 // @namespace    com.jfbueno
-// @version      0.3.5
+// @version      0.4.0
 // @description  Find and send gifs in SE chat
 // @author       https://github.com/jfbueno
 // @match        http://chat.stackexchange.com/rooms/*
@@ -41,6 +41,15 @@ with_jquery(function($) {
         modal: true
     };
 
+    function stripQueryString(originalUrl) {
+        var url = originalUrl;
+        var questionMarkIndex = url.indexOf('?');
+        if(questionMarkIndex > 0) {
+            url = url.substring(0, questionMarkIndex);
+        }
+        return url;
+    }
+
     var findGifs = function () {
         if(!$('#txt-busca').val())
             return;
@@ -53,7 +62,8 @@ with_jquery(function($) {
             var modalSource = modalInicio();
 
             data.data.forEach(function(el){
-                modalSource += imgTagTpl.replaceAll('#GIF-URL#', el.images.original.url);
+                var url = stripQueryString(el.images.original.url);
+                modalSource += imgTagTpl.replaceAll('#GIF-URL#', url);
             });
 
             modalSource += modalFim();
@@ -107,7 +117,8 @@ with_jquery(function($) {
 
         var strHtml = '';
         data.forEach(function(el) {
-            strHtml += imgTagTpl.replaceAll('#GIF-URL#', el.images.original.url);
+            var url = stripQueryStrung(el.images.original.url);
+            strHtml += imgTagTpl.replaceAll('#GIF-URL#', url);
         });
 
         $(parentElement).find('#dialog-content').html(strHtml);
@@ -127,7 +138,6 @@ with_jquery(function($) {
 
     $('body').on('click', '.gif', function(){
         $('#input').val($(this).data('url'));
-        //$('#sayit-button').trigger('click');
         $('#dialog').dialog('destroy');
     });
 });
