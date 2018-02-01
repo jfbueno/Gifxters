@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Gifxters
 // @namespace    com.jfbueno
-// @version      0.4.0
+// @version      0.4.1
 // @description  Find and send gifs in SE chat
 // @author       https://github.com/jfbueno
 // @match        http://chat.stackexchange.com/rooms/*
@@ -28,7 +28,11 @@ with_jquery(function($) {
 
     var offset = 0, limit = 6;
     const imgTagTpl = '<img class="gif" src="#GIF-URL#" style="width: 120px; height: 80px; cursor: pointer; margin: 3px;" data-url="#GIF-URL#"> </img>';
-    const apiKey = 'dc6zaTOxFJmzC'; //Beta API Key
+    const tplModalInicio = '<div id="dialog"> <div id="dialog-content">';
+    const tplModalFim = '</div><span>Made with ♥ by <a href="http://pt.stackoverflow.com/u/18246">LINQ</a></span><div style="float: right"><button id="prev-page" style="margin-right: 5px;">&#8592;</button><button id="next-page">&#8594;</button></div></div>';
+    const tplInputs = '<div id="gifxters" style="position: relative;"><input type="text" id="txt-busca" /> <button class="button" id="bt-buscar">Buscar GIF</button></div>';
+
+    const apiKey = 'dc6zaTOxFJmzC';
     const apiUrl = 'https://api.giphy.com/v1/gifs/search';
     const modalOptions = {
         position: { my: 'left bottom', at: 'left bottom', of: $('#widgets') } ,
@@ -59,14 +63,14 @@ with_jquery(function($) {
         var url = apiUrl + '?' + params;
 
         $.get(url, function(data){
-            var modalSource = modalInicio();
+            var modalSource = tplModalInicio;
 
             data.data.forEach(function(el){
                 var url = stripQueryString(el.images.original.url);
                 modalSource += imgTagTpl.replaceAll('#GIF-URL#', url);
             });
 
-            modalSource += modalFim();
+            modalSource += tplModalFim;
 
             $(modalSource).dialog(modalOptions);
         });
@@ -79,7 +83,7 @@ with_jquery(function($) {
             href: 'https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css'
         }).appendTo('head');
 
-        $('#widgets').append(htmlInputs());
+        $('#widgets').append(tplInputs);
     });
 
     $('.ui-widget-overlay').on('click', function(){
@@ -122,18 +126,6 @@ with_jquery(function($) {
         });
 
         $(parentElement).find('#dialog-content').html(strHtml);
-    }
-
-    function modalFim(){
-        return '</div><span>Powered by GIPHY</span><div style="float: right"><button id="prev-page" style="margin-right: 5px;">&#8592;</button><button id="next-page">&#8594;</button></div></div>';
-    }
-
-    function modalInicio(){
-        return '<div id="dialog"> <div id="dialog-content">';
-    }
-
-    function htmlInputs(){
-        return '<div id="gifxters" style="position: relative;"><input type="text" id="txt-busca" /> <button class="button" id="bt-buscar">Buscar GIF</button></div>';
     }
 
     $('body').on('click', '.gif', function(){
